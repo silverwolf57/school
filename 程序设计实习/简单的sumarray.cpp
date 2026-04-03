@@ -2,10 +2,10 @@
 #include <string>
 using namespace std;
 template <class T>
-T SumArray(T &a,T &b){
-    T s;
-    for(T i=a;i<b;++i){
-        s+=i;
+T SumArray(T *a,T *b){
+    T s=*a;
+    for(T *i=a+1;i<b;++i){
+        s+=*i;
     }
     return s;
 }
