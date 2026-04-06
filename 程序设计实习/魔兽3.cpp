@@ -3,74 +3,101 @@
 #include<string>
 #include<map>
 #include<iomanip>
+#include<algorithm>
 
 using namespace std;
 
 string warrior_name[5]={"dragon","ninja","iceman","lion","wolf"};
 string weapon_name[3]={"sword","bomb","arrow"};
 vector<int> hps(5);
-
+class weapon{
+    friend class warrior;
+    private:
+    int type;
+    int attack_force;
+    int remain_uses;//designed for the arrows
+    public:
+    weapon(int _type,int _attack_force,int _used):type(_type),attack_force(_attack_force){}
+    void restore_uses(){
+        if(type==2){
+            remain_uses=2;
+        }else if (type==1){
+            remain_uses=1;
+        }else{
+            remain_uses=9999;
+        }
+    }
+    int get_damage(int force){
+        if(type==0){
+           return force*2/10;
+        }  
+        else if(type==1){
+            return force*4/10;
+        }
+        else{
+            return force*3/10;
+        }
+    }//caculate the damage according to the weapon
+    int self_damage(int attack_damage){
+        if(type==1)return attack_damage/2;
+        return 0;
+    }//damage caculation designed for the bomb
+    ~weapon(){}
+};
 class warrior{
     protected:
     int id;
     int hp;
     string name;
+    int force;
+    int color;
+    int position;
+    vector<weapon> weapons;
+    int loyalty;//used for lions
+    int steps;//used for the iceman
     public:
-    warrior(){}
-    warrior(int _id,int _hp,string _name):id(_id),hp(_hp),name(_name){}
-    virtual ~warrior(){}
-    virtual void print_status(int remain) = 0;
-
+    warrior(int _id,int _hp,string _name,int _color):id(_id),hp(_hp),name(_name),
+    color(_color),steps(0){}
+    ~warrior(){}
+    void sort_weapons(){
+         if (weapons.empty())return;
+         
+         sort(weapons.begin(),weapons.end(),[](const weapon& a,const weapon& b){
+             if(a.type!=b.type){
+                return a.type<b.type;
+             }
+             else if(a.type==2&&b.type==2){
+                return a.remain_uses<b.remain_uses;
+             }
+             return false;
+         });
+    }//sort the weapons
+    virtual void add_weapon(weapon w){
+        if (weapons.size() < 10) {
+        weapons.push_back(w);
+      }
+    }
+    void rob_weapons(){}//designed for the wolves
+    virtual void march(){
+        if(color==0){
+            position++;
+        }else{
+            position--;
+        }
+    }//move the warrior
+    virtual void attack(warrior& w,weapon &wpn){
+        w.hp-=wpn.get_damage(force);
+        if(wpn.type==1)hp-=wpn.self_damage();
+        else if(wpn.type==2)wpn.remain_uses--;
+    }//attack
+    bool is_dead(){
+        if (hp<0)return true;
+    }//check the state
+    void should_escape(){}//for the lion to run away
 };
 
 class dragon:public warrior{
-      private:
-      string weapon;
-      double morale;
-      public:
-      dragon(int _id,int _hp,string _name,double _morale):warrior(_id,_hp,"dragon"),morale(_morale){}
-      void print_status(int remain)override {
-        weapon=weapon_name[id%3];
-        morale=(double)remain/hp;
-        cout<<"It has a "<<weapon<<",and it's morale is "<<fixed<<setprecision(2)<<morale<<endl;
-      }
-};
-
-class ninja:public warrior{
-    private:
-    string weapon1,weapon2;
     public:
-    ninja(int _id,int _hp,string _name):warrior(_id,_hp,"ninja"){}
-    void print_status(int remain)override{
-         weapon1=weapon_name[id%3];
-         weapon2=weapon_name[(id+1)%3];
-         cout<<"It has a "<<weapon1<<" and a "<<weapon2<<endl;
-    }
-};
-
-class iceman:public warrior{
-    private:
-    string weapon;
-    public:
-    iceman(int _id,int _hp,string _name):warrior(_id,_hp,"iceman"){}
-    void print_status(int remain)override{
-        weapon=weapon_name[id%3];
-        cout<<"It has a "<<weapon<<endl;
-    }
-};
-
-class lion:public warrior{
-    private:
-    int loyalty;
-    public:
-    lion(int _id,int _hp,string _name,int _loyalty):warrior(_id,_hp,"lion"),loyalty(_loyalty){}
-    void print_status(int remain)override{
-        cout<<"It's loyalty is "<<loyalty<<endl;
-    }
-};
-
-class wolf:public warrior{
-    public:
-    wolf(int _id,int _hp,string _name):warrior(_id,_hp,"wolf"){}
-    void print_status(int remain) override {}
+    warrior(int _id,int _hp,string _name,int _color):id(_id),hp(_hp),name(_name),
+    color(_color),steps(0){}
 };
