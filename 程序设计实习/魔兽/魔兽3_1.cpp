@@ -9,7 +9,6 @@
 
 using namespace std;
 
-// 全局状态和参数
 int current_time = 0;
 bool red_conquered = false;
 bool blue_conquered = false;
@@ -22,7 +21,6 @@ vector<string> weapon_kinds = {"sword", "bomb", "arrow"};
 
 enum fight_result { BOTH_DEAD, BOTH_ALIVE, BLUE_WIN, RED_WIN };
 
-// 获取格式化时间戳
 string get_format_clock() {
     int hour = current_time / 60;
     int minute = current_time % 60;
@@ -31,13 +29,11 @@ string get_format_clock() {
     return move(ost.str());
 }
 
-// ---------------- 武器系统解耦 ----------------
 class weapon {
 public:
     string name;
     weapon(string name_) : name(name_) {}
     virtual ~weapon() {}
-    // 解耦：直接传入必要的战斗数值，避免依赖 warrior 类的定义
     virtual void attack(int attacker_force, string attacker_name, int& attacker_hp, int& injure_hp) {}
     virtual bool is_usable() { return false; }
 };
@@ -80,19 +76,18 @@ public:
     bool is_usable() override { return use_count < 2; }
 };
 
-// 全局宝剑共享实例
+
 sword* sw = nullptr;
 
-// ---------------- 战士系统 ----------------
 class warrior {
 public:
-    int id;              // 战士编号
-    int hp;              // 生命值
-    int force;           // 攻击力
-    string side;         // 阵营
-    string name;         // 名称
-    int location;        // 所在城市
-    int cur_weapon_ind;  // 当前使用武器的序号
+    int id;              
+    int hp;              
+    int force;           
+    string side;         
+    string name;         
+    int location;        
+    int cur_weapon_ind;  
     vector<weapon*> weapons;
 
     warrior(int id_, int hp_, string side_, string name_, int location_, int force_)
@@ -318,7 +313,7 @@ public:
     ninja(warrior& w) : warrior(w) {}
 };
 
-// ---------------- 城市与基地 ----------------
+
 class city {
 public:
     warrior* first;
@@ -326,9 +321,8 @@ public:
     city(warrior* red, warrior* blue) : first(red), second(blue) {}
 };
 
-vector<city> cities; // 城市全局向量
+vector<city> cities; 
 
-// 由于全局函数 warrior_born 需要在 headquarter 内部被调用，提前声明
 void warrior_born(warrior& w);
 
 class headquarter {
@@ -408,8 +402,6 @@ public:
     }
 };
 
-
-// ---------------- 全局统筹事件函数组 ----------------
 void warrior_born(warrior& w) {
     cout << get_format_clock() << " " << w.side << " " << w.name << " " << w.id << " born\n";
     if (w.name == "lion") {
@@ -594,7 +586,6 @@ void happen55_report_warriors() {
     }
 }
 
-// ---------------- 游戏初始化逻辑 ----------------
 void init_game() {
     current_time = 0;
     blue_conquered = false;
