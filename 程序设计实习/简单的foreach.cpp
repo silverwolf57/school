@@ -34,7 +34,6 @@ void MyForeach(T* a,T* b,Q c){
 		c(*a);
 	 }
 }
-
 void Print(string s)
 {
 	cout << s;
