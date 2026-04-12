@@ -29,8 +29,10 @@ Peking
 using namespace std;
 // 在此处补充你的代码
 template<class T,class Q>
-void MyForeach(T a,T b,Q c){
-    
+void MyForeach(T* a,T* b,Q c){
+	 for(;a!=b;++a){
+		c(*a);
+	 }
 }
 
 void Print(string s)
