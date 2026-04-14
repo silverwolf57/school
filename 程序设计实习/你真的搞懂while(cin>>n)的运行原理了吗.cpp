@@ -20,13 +20,17 @@ using namespace std;
 class MyCin
 {
 // 在此处补充你的代码
-   template<class T>
-   friend istream& operator>>(T& is,int &a){
-      is>>a;
-      return is;
+private:
+   bool flag=true;
+public:
+   MyCin& operator>>(int& m){
+    cin>>m;
+    if(m==-1)flag=false;
+    return *this;
    }
-
-   
+   operator bool(){
+    return flag;
+   }
 };
 int main()
 {
