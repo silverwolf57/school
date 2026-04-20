@@ -31,9 +31,9 @@ ostream &fun;
 string div;
 public:
 myostream_iteraotr(ostream& f,string c):fun(f),div(c){}
-myostream_iteraotr operator=(T s){return *this;}
+myostream_iteraotr operator*(){return *this;}
 myostream_iteraotr operator++(){return *this;}
-myostream_iteraotr operator*(T s){
+myostream_iteraotr operator=(T s){
     fun<<s<<div;
     return *this;
 } 
@@ -53,3 +53,4 @@ int main()
 	Copy(b,b+SIZE,output2);
 	return 0;
 }
+
