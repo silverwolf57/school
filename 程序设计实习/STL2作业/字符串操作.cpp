@@ -44,45 +44,83 @@ Op29adfk48
 35a8
 提示
 推荐使用string类中的相关操作函数。*/
-#include<iostream>
-#include<vector>
-#include<string>
-#include<cstring>
-#include<cctype>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-bool check(string s){
-    for(char c: s){
-        if(!isdigit(c)){
-            return false;
-        }
-    }
-    return true;
+vector<string> strings;
+
+string getString();
+int getInt();
+
+bool isNumber(const string& s, int& num) {
+    if (s.empty() || s.length() > 5) return false;
+    for (char c : s) if (!isdigit(c)) return false;
+    num = stoi(s);
+    return num >= 0 && num <= 99999;
 }
 
-int main(){
-    int n;
-    cin>>n;
-    vector<string> str(n);
-    for(int i=0;i<n;++i){
-        cin>>str[i];
-    }
+string getString() {
     string cmd;
-    while(cin>>cmd&&cmd!="over"){
-         if(cmd=="copy"){
-            int m,l,k;
-            cin>>m>>l>>k;
-            string out=str[m].substr(l,k);
-         }else if(cmd=="add"){
-            string s1,s2;
-            cin>>s1>>s2;
-            if(check(s1)&&check(s2)&&s1.size()<6&&s2.size()<6){
-                int num1=stoi(s1);
-                int num2=stoi(s2);
-                
-
-            }
-         }
+    cin >> cmd;
+    if (cmd == "copy") {
+        int n = getInt();
+        int x = getInt();
+        int l = getInt();
+        return strings[n - 1].substr(x, l);
+    } else if (cmd == "add") {
+        string s1 = getString();
+        string s2 = getString();
+        int n1, n2;
+        if (isNumber(s1, n1) && isNumber(s2, n2)) {
+            return to_string(n1 + n2);
+        }
+        return s1 + s2;
     }
+    return cmd; // 常量字符串
+}
+
+int getInt() {
+    string cmd;
+    cin >> cmd;
+    if (cmd == "find") {
+        string s = getString();
+        int n = getInt();
+        size_t pos = strings[n - 1].find(s);
+        return (pos == string::npos) ? (int)strings[n - 1].length() : (int)pos;
+    } else if (cmd == "rfind") {
+        string s = getString();
+        int n = getInt();
+        size_t pos = strings[n - 1].rfind(s);
+        return (pos == string::npos) ? (int)strings[n - 1].length() : (int)pos;
+    }
+    return stoi(cmd); // 常量整数
+}
+
+int main() {
+    int n;
+    cin >> n;
+    strings.resize(n);
+    for (int i = 0; i < n; ++i) cin >> strings[i];
+
+    string cmd;
+    while (cin >> cmd && cmd != "over") {
+        if (cmd == "insert") {
+            string s = getString();
+            int n_idx = getInt();
+            int x = getInt();
+            strings[n_idx - 1].insert(x, s);
+        } else if (cmd == "reset") {
+            string s = getString();
+            int n_idx = getInt();
+            strings[n_idx - 1] = s;
+        } else if (cmd == "print") {
+            cout << strings[getInt() - 1] << endl;
+        } else if (cmd == "printall") {
+            for (const auto& s : strings) cout << s << endl;
+        }
+    }
+    return 0;
 }
