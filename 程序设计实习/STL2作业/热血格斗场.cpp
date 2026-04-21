@@ -28,30 +28,52 @@ N行，每行两个数，为每场比赛双方的id，新手的id写在前面。
 3 2
 4 2
 */
-#include<iostream>
-#include<map>
-#include<cmath>
+#include <iostream>
+#include <map>
+#include <cmath>
 
 using namespace std;
 
+int main() {
+    // 优化输入输出速度
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
 
-int main(){
     int n;
-    cin>>n;
-    map<int,int> record;
-    record.insert({1,100000});
-    for(int i=2;i<=n;++i){
-        int m,l; 
-        int op;    
-        int sub='INF';
-        cin>>m>>l;
-        for(auto j=1;j<=record.size();++j){
-           if(abs(l-record[j])<sub){
-            sub=abs(l-record[j]);
-            op=j;
-           }
+    cin >> n;
+
+    // key: 实力值, value: id
+    map<int, int> record;
+    record[1000000000] = 1;
+
+    for (int i = 0; i < n; ++i) {
+        int id, strength;
+        cin >> id >> strength;
+
+        // 查找第一个大于等于当前实力值的人
+        auto it = record.lower_bound(strength);
+
+        int opponent_id;
+        if (it == record.begin()) {
+            // 没有更弱的人，只能选当前这个最接近的（更强）
+            opponent_id = it->second;
+        } else if (it == record.end()) {
+            // 没有更强的人，只能选前一个（更弱）
+            opponent_id = prev(it)->second;
+        } else {
+            // 有更强也有更弱，比较差值
+            auto prev_it = prev(it);
+            if (abs(it->first - strength) < abs(prev_it->first - strength)) {
+                opponent_id = it->second;
+            } else {
+                // 差值相同选弱的，或者确实是弱的更近
+                opponent_id = prev_it->second;
+            }
         }
-        cout<<i<<" "<<op<<endl;
-        record.insert({m,l});
+
+        cout << id << " " << opponent_id << "\n";
+        record[strength] = id;
     }
+
+    return 0;
 }
